@@ -4,6 +4,7 @@ import com.sp.SPBRevamped;
 import com.sp.entity.custom.SkinWalkerEntity;
 import com.sp.entity.custom.SmilerEntity;
 import com.sp.entity.custom.WalkerEntity;
+import com.sp.entity.custom.BacteriaEntity;
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricEntityTypeBuilder;
 import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityType;
@@ -25,4 +26,8 @@ public class ModEntities {
     public static final EntityType<WalkerEntity> WALKER_ENTITY = Registry.register(Registries.ENTITY_TYPE,
             new Identifier(SPBRevamped.MOD_ID, "walker"),
             FabricEntityTypeBuilder.create(SpawnGroup.MONSTER, WalkerEntity::new).dimensions(EntityDimensions.fixed(2.0f, 2.0f)).build());
+
+    public static final EntityType<BacteriaEntity> BACTERIA_ENTITY = Registry.register(Registries.ENTITY_TYPE,
+            new Identifier(SPBRevamped.MOD_ID, "bacteria"),
+            FabricEntityTypeBuilder.create(SpawnGroup.MONSTER, BacteriaEntity::new).dimensions(EntityDimensions.fixed(0.6f, 1.95f)).build());
 }

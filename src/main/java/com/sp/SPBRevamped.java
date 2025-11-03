@@ -82,6 +82,7 @@ public class SPBRevamped implements ModInitializer {
 		FabricDefaultAttributeRegistry.register(ModEntities.SKIN_WALKER_ENTITY, SkinWalkerEntity.createSkinWalkerAttributes());
 		FabricDefaultAttributeRegistry.register(ModEntities.SMILER_ENTITY, SmilerEntity.createSmilerAttributes());
 		FabricDefaultAttributeRegistry.register(ModEntities.WALKER_ENTITY, com.sp.entity.custom.WalkerEntity.createWalkerAttributes());
+		FabricDefaultAttributeRegistry.register(ModEntities.BACTERIA_ENTITY, com.sp.entity.custom.BacteriaEntity.createBacteriaAttributes());
 
 		LOGGER.info("\"WOOOOOOOOOOOOOOOOOOOOOOOooooooooooooooooooooooooo..........\" -He said as he fell into the backrooms, never to be seen again.");
 

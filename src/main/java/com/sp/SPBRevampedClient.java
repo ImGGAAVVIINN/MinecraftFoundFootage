@@ -154,8 +154,10 @@ public class SPBRevampedClient implements ClientModInitializer {
         EntityRendererRegistry.register(ModEntities.SKIN_WALKER_ENTITY, SkinWalkerRenderer::new);
         EntityRendererRegistry.register(ModEntities.WALKER_ENTITY, WalkerRenderer::new);
         EntityRendererRegistry.register(ModEntities.SMILER_ENTITY, SmilerRenderer::new);
+    EntityRendererRegistry.register(ModEntities.BACTERIA_ENTITY, com.sp.entity.client.renderer.BacteriaRenderer::new);
 
         EntityModelLayerRegistry.registerModelLayer(ModModelLayers.SMILER, SmilerModel::getTexturedModelData);
+    EntityModelLayerRegistry.registerModelLayer(ModModelLayers.BACTERIA, com.sp.entity.client.model.BacteriaModel::getTexturedModelData);
 
         ResourceManagerHelper.get(ResourceType.CLIENT_RESOURCES).registerReloadListener(new SimpleSynchronousResourceReloadListener() {
             @Override
