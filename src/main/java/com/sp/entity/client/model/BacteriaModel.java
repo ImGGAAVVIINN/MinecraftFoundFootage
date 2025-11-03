@@ -20,6 +20,7 @@ public class BacteriaModel<T extends BacteriaEntity> extends SinglePartEntityMod
     private final ModelPart rightLeg;
     private final ModelPart[] cables;
     private final ModelPart[] headCables;
+    private final ModelPart[] armConnections;
     private final ModelPart[] leftFingers;
     private final ModelPart[] rightFingers;
     private final ModelPart[] leftArmCables;
@@ -30,40 +31,45 @@ public class BacteriaModel<T extends BacteriaEntity> extends SinglePartEntityMod
     public BacteriaModel(ModelPart root) {
         this.root = root;
         this.body = root.getChild("body");
-        this.head = root.getChild("head");
-        this.leftArm = root.getChild("left_arm");
-        this.rightArm = root.getChild("right_arm");
+        this.head = this.body.getChild("head");
+        this.leftArm = this.body.getChild("left_arm");
+        this.rightArm = this.body.getChild("right_arm");
         this.leftLeg = root.getChild("left_leg");
         this.rightLeg = root.getChild("right_leg");
         
         this.cables = new ModelPart[8];
         for (int i = 0; i < this.cables.length; i++) {
-            this.cables[i] = root.getChild("cable" + i);
+            this.cables[i] = this.body.getChild("cable" + i);
         }
         
         this.headCables = new ModelPart[4];
         for (int i = 0; i < this.headCables.length; i++) {
-            this.headCables[i] = root.getChild("head_cable" + i);
+            this.headCables[i] = this.body.getChild("head_cable" + i);
+        }
+        
+        this.armConnections = new ModelPart[3];
+        for (int i = 0; i < this.armConnections.length; i++) {
+            this.armConnections[i] = this.body.getChild("arm_connection" + i);
         }
         
         this.leftFingers = new ModelPart[5];
         for (int i = 0; i < this.leftFingers.length; i++) {
-            this.leftFingers[i] = root.getChild("left_finger" + i);
+            this.leftFingers[i] = this.leftArm.getChild("left_finger" + i);
         }
         
         this.rightFingers = new ModelPart[5];
         for (int i = 0; i < this.rightFingers.length; i++) {
-            this.rightFingers[i] = root.getChild("right_finger" + i);
+            this.rightFingers[i] = this.rightArm.getChild("right_finger" + i);
         }
         
         this.leftArmCables = new ModelPart[6];
         for (int i = 0; i < this.leftArmCables.length; i++) {
-            this.leftArmCables[i] = root.getChild("left_arm_cable" + i);
+            this.leftArmCables[i] = this.leftArm.getChild("left_arm_cable" + i);
         }
         
         this.rightArmCables = new ModelPart[6];
         for (int i = 0; i < this.rightArmCables.length; i++) {
-            this.rightArmCables[i] = root.getChild("right_arm_cable" + i);
+            this.rightArmCables[i] = this.rightArm.getChild("right_arm_cable" + i);
         }
         
         this.leftLegCables = new ModelPart[3];
@@ -82,31 +88,31 @@ public class BacteriaModel<T extends BacteriaEntity> extends SinglePartEntityMod
         ModelPartData modelPartData = modelData.getRoot();
         
         // Even thinner, taller body with very wide shoulders
-        modelPartData.addChild("body", 
+        ModelPartData body = modelPartData.addChild("body", 
             ModelPartBuilder.create()
                 .uv(0, 0)
                 .cuboid(-1.5F, -28.0F, -1.0F, 3.0F, 28.0F, 2.0F),
             ModelTransform.pivot(0.0F, 12.0F, 0.0F));
 
-        // Bigger head
-        modelPartData.addChild("head",
+        // Bigger head - child of body
+        body.addChild("head",
             ModelPartBuilder.create()
                 .uv(24, 0)
                 .cuboid(-4.0F, -8.0F, -4.0F, 8.0F, 8.0F, 8.0F),
-            ModelTransform.pivot(0.0F, -16.0F, 0.0F));
+            ModelTransform.pivot(0.0F, -28.0F, 0.0F)); // At top of body
 
-        // Long, thin arms with wider shoulder positioning
-        modelPartData.addChild("left_arm",
+        // Long, thin arms with wider shoulder positioning - children of body
+        ModelPartData leftArm = body.addChild("left_arm",
             ModelPartBuilder.create()
                 .uv(0, 32)
                 .cuboid(-1.0F, 0.0F, -1.0F, 2.0F, 24.0F, 2.0F),
-            ModelTransform.pivot(6.5F, -14.0F, 0.0F));
+            ModelTransform.pivot(6.5F, -26.0F, 0.0F)); // Near shoulders
             
-        modelPartData.addChild("right_arm",
+        ModelPartData rightArm = body.addChild("right_arm",
             ModelPartBuilder.create()
                 .uv(0, 32)
                 .cuboid(-1.0F, 0.0F, -1.0F, 2.0F, 24.0F, 2.0F),
-            ModelTransform.pivot(-6.5F, -14.0F, 0.0F));
+            ModelTransform.pivot(-6.5F, -26.0F, 0.0F)); // Near shoulders
 
         // Short, thin legs without feet
         modelPartData.addChild("left_leg",
@@ -121,50 +127,62 @@ public class BacteriaModel<T extends BacteriaEntity> extends SinglePartEntityMod
                 .cuboid(-1.0F, 0.0F, -1.0F, 2.0F, 12.0F, 2.0F),
             ModelTransform.pivot(-2.0F, 12.0F, 0.0F));
 
-        // Random messy cable-like wrappings around body - more chaotic
+        // Random messy cable-like wrappings around body - children of body
         float[] cableYPositions = {-26.0F, -20.0F, -14.0F, -8.0F, -2.0F, 4.0F, 9.0F, 15.0F};
         float[] cableRotations = {0.4F, -0.5F, 0.3F, -0.6F, 0.35F, -0.45F, 0.5F, -0.3F};
         float[] cableWidths = {7.0F, 11.0F, 9.0F, 12.0F, 8.0F, 10.0F, 9.0F, 11.0F};
         float[] cablePitches = {0.2F, -0.15F, 0.1F, -0.2F, 0.15F, -0.1F, 0.25F, -0.18F};
         
         for (int i = 0; i < 8; i++) {
-            modelPartData.addChild("cable" + i,
+            body.addChild("cable" + i,
                 ModelPartBuilder.create()
                     .uv(16, 32)
                     .cuboid(-cableWidths[i]/2, -0.75F, -2.5F, cableWidths[i], 1.5F, 5.0F),
                 ModelTransform.of(0.0F, cableYPositions[i], 0.0F, cablePitches[i], cableRotations[i], 0.0F));
         }
         
-        // Wider head cables - hanging down from head
-        float[] headCableAngles = {0.0F, (float)Math.PI/2, (float)Math.PI, (float)Math.PI*3/2};
+        // Horizontal connections through torso connecting the arms - children of body
+        float[] connectionYPositions = {-24.0F, -16.0F, -8.0F}; // At different heights
+        for (int i = 0; i < 3; i++) {
+            body.addChild("arm_connection" + i,
+                ModelPartBuilder.create()
+                    .uv(32, 0)
+                    .cuboid(-6.5F, -0.5F, -0.5F, 13.0F, 1.0F, 1.0F), // Horizontal bar from left to right arm
+                ModelTransform.pivot(0.0F, connectionYPositions[i], 0.0F));
+        }
+        
+        // Wider head cables - sticking out horizontally at random angles - children of body
+        float[] headCableAngles = {0.3F, 1.8F, 3.5F, 5.1F}; // Random angles in radians
+        float[] headCablePitches = {1.57F, 1.57F, 1.57F, 1.57F}; // 90 degrees (π/2) to make horizontal
         for (int i = 0; i < 4; i++) {
             float x = (float)Math.cos(headCableAngles[i]) * 3.5F;
             float z = (float)Math.sin(headCableAngles[i]) * 3.5F;
-            modelPartData.addChild("head_cable" + i,
+            body.addChild("head_cable" + i,
                 ModelPartBuilder.create()
                     .uv(48, 0)
                     .cuboid(-1.0F, 0.0F, -1.0F, 2.0F, 10.0F, 2.0F),
-                ModelTransform.pivot(x, -8.0F, z));
+                ModelTransform.of(x, -28.0F - 8.0F, z, headCablePitches[i], 0.0F, 0.0F)); // At head bottom, rotated horizontal
         }
         
-        // Messy cables wrapping around left arm
+        // Messy cables wrapping around arms - children of the arms for proper attachment
         float[] armCableYPos = {2.0F, 6.0F, 10.0F, 14.0F, 18.0F, 22.0F};
         float[] armCableRot = {0.8F, -0.6F, 0.7F, -0.9F, 0.5F, -0.7F};
+        float[] armCablePitches = {0.1F, -0.05F, 0.08F, -0.1F, 0.06F, -0.08F}; // Slight angle variations
+        
         for (int i = 0; i < 6; i++) {
-            modelPartData.addChild("left_arm_cable" + i,
+            leftArm.addChild("left_arm_cable" + i,
                 ModelPartBuilder.create()
                     .uv(32, 48)
                     .cuboid(-1.5F, -0.5F, -1.5F, 3.0F, 1.0F, 3.0F),
-                ModelTransform.of(6.5F, -14.0F + armCableYPos[i], 0.0F, 0.0F, armCableRot[i], 0.0F));
+                ModelTransform.of(0.0F, armCableYPos[i], 0.0F, armCablePitches[i], armCableRot[i], 0.0F)); // Relative to arm
         }
         
-        // Messy cables wrapping around right arm
         for (int i = 0; i < 6; i++) {
-            modelPartData.addChild("right_arm_cable" + i,
+            rightArm.addChild("right_arm_cable" + i,
                 ModelPartBuilder.create()
                     .uv(32, 48)
                     .cuboid(-1.5F, -0.5F, -1.5F, 3.0F, 1.0F, 3.0F),
-                ModelTransform.of(-6.5F, -14.0F + armCableYPos[i], 0.0F, 0.0F, -armCableRot[i], 0.0F));
+                ModelTransform.of(0.0F, armCableYPos[i], 0.0F, armCablePitches[i], -armCableRot[i], 0.0F)); // Relative to arm
         }
         
         // Messy cables wrapping around left leg
@@ -187,24 +205,23 @@ public class BacteriaModel<T extends BacteriaEntity> extends SinglePartEntityMod
                 ModelTransform.of(-2.0F, 12.0F + legCableYPos[i], 0.0F, 0.0F, -legCableRot[i], 0.0F));
         }
         
-        // Long, thin fingers for left hand (attached to end of arm at y=10)
+        // Long, thin fingers at the end of arms - children of arms, positioned closer to body
         for (int i = 0; i < 5; i++) {
-            float xOffset = -2.0F + (i * 1.0F);
-            modelPartData.addChild("left_finger" + i,
+            float xOffset = -1.0F + (i * 0.5F); // Narrower spread, closer together
+            leftArm.addChild("left_finger" + i,
                 ModelPartBuilder.create()
                     .uv(56, 0)
                     .cuboid(-0.25F, 0.0F, -0.25F, 0.5F, 6.0F, 0.5F),
-                ModelTransform.pivot(6.5F + xOffset * 0.3F, 10.0F, 0.0F));
+                ModelTransform.pivot(xOffset * 0.3F, 24.0F, 0.0F)); // At arm end (arm length is 24)
         }
         
-        // Long, thin fingers for right hand (attached to end of arm at y=10)
         for (int i = 0; i < 5; i++) {
-            float xOffset = -2.0F + (i * 1.0F);
-            modelPartData.addChild("right_finger" + i,
+            float xOffset = -1.0F + (i * 0.5F); // Narrower spread, closer together
+            rightArm.addChild("right_finger" + i,
                 ModelPartBuilder.create()
                     .uv(56, 0)
                     .cuboid(-0.25F, 0.0F, -0.25F, 0.5F, 6.0F, 0.5F),
-                ModelTransform.pivot(-6.5F + xOffset * 0.3F, 10.0F, 0.0F));
+                ModelTransform.pivot(xOffset * 0.3F, 24.0F, 0.0F)); // At arm end (arm length is 24)
         }
         
         return TexturedModelData.of(modelData, 64, 64);
@@ -222,32 +239,35 @@ public class BacteriaModel<T extends BacteriaEntity> extends SinglePartEntityMod
         // Slight swaying motion
         float swayAmount = (float)Math.sin(ageInTicks * 0.1F) * 0.05F;
         
-        // Apply torso rotation to body
+        // Apply torso rotation to body - this will affect all children automatically
         this.body.pitch = torsoRotation;
         this.body.yaw = swayAmount;
         
-        // Apply torso rotation to head (dampened)
-        this.head.pitch = torsoRotation * 0.6F;
-        this.head.yaw = swayAmount * 0.5F;
+        // Head rotation (relative to body, so don't add torsoRotation)
+        this.head.pitch = 0.0F;
+        this.head.yaw = 0.0F;
 
-        // Arms swing with walking animation, idle motion, and torso rotation
+        // Arms swing with walking animation and idle motion (relative to body)
         float armSwing = (float)Math.sin(ageInTicks * 0.05F) * 0.15F;
         float walkSwing = (float)Math.cos(limbSwing * 0.6662F) * 0.8F * limbSwingAmount;
         
-        this.leftArm.pitch = -0.3F + armSwing + walkSwing + torsoRotation; // Base angle + idle + walk + torso rotation
-        this.rightArm.pitch = -0.3F - armSwing - walkSwing + torsoRotation; // Base angle + idle + walk + torso rotation
-        this.leftArm.yaw = -0.2F + swayAmount;
-        this.rightArm.yaw = 0.2F + swayAmount;
+        this.leftArm.pitch = -0.3F + armSwing + walkSwing;
+        this.rightArm.pitch = -0.3F - armSwing - walkSwing;
+        this.leftArm.yaw = -0.2F;
+        this.rightArm.yaw = 0.2F;
         this.leftArm.roll = -0.1F;
         this.rightArm.roll = 0.1F;
 
-        // Legs stay mostly still (no torso rotation)
+        // Legs walking animation - short stiff legs
+        float legSwing = (float)Math.cos(limbSwing * 0.6662F) * 1.0F * limbSwingAmount;
+        this.leftLeg.pitch = legSwing;
+        this.rightLeg.pitch = -legSwing;
         this.leftLeg.yaw = swayAmount * 0.3F;
         this.rightLeg.yaw = swayAmount * 0.3F;
-        this.leftLeg.pitch = 0.0F;
-        this.rightLeg.pitch = 0.0F;
+        this.leftLeg.roll = 0.0F;
+        this.rightLeg.roll = 0.0F;
 
-        // Animate cables with more chaotic writhing motion + torso rotation
+        // Animate cables with chaotic writhing motion (relative to body)
         for (int i = 0; i < this.cables.length; i++) {
             float offset = i * 0.8F;
             float speed = 0.15F + (i % 3) * 0.05F;
@@ -256,33 +276,33 @@ public class BacteriaModel<T extends BacteriaEntity> extends SinglePartEntityMod
             float cablePitch = (float)Math.sin(ageInTicks * 0.08F + offset * 1.5F) * 0.15F;
             this.cables[i].yaw = cableWave;
             this.cables[i].roll = cableTwist;
-            this.cables[i].pitch = cablePitch + torsoRotation; // Add torso rotation
+            this.cables[i].pitch = cablePitch;
         }
         
-        // Animate head cables - hanging and swaying more dramatically + torso rotation
+        // Animate head cables - hanging and swaying (relative to body)
         for (int i = 0; i < this.headCables.length; i++) {
             float offset = i * 1.2F;
             float sway = (float)Math.sin(ageInTicks * 0.12F + offset) * 0.3F;
-            this.headCables[i].pitch = 0.25F + sway + torsoRotation; // Swing forward/back + torso rotation
+            this.headCables[i].pitch = 0.25F + sway;
             this.headCables[i].yaw = (float)Math.cos(ageInTicks * 0.1F + offset) * 0.2F;
             this.headCables[i].roll = (float)Math.sin(ageInTicks * 0.15F + offset) * 0.15F;
         }
         
-        // Animate arm cables - chaotic wrapping motion + torso rotation
+        // Animate arm cables - chaotic wrapping motion (relative to body)
         for (int i = 0; i < this.leftArmCables.length; i++) {
             float offset = i * 0.5F;
             float twist = (float)Math.sin(ageInTicks * 0.2F + offset) * 0.4F;
-            this.leftArmCables[i].yaw += twist;
+            this.leftArmCables[i].yaw = twist;
             this.leftArmCables[i].roll = (float)Math.cos(ageInTicks * 0.15F + offset) * 0.2F;
-            this.leftArmCables[i].pitch = torsoRotation; // Apply torso rotation
+            this.leftArmCables[i].pitch = 0.0F;
         }
         
         for (int i = 0; i < this.rightArmCables.length; i++) {
             float offset = i * 0.5F;
             float twist = (float)Math.sin(ageInTicks * 0.2F + offset + 1.0F) * 0.4F;
-            this.rightArmCables[i].yaw += twist;
+            this.rightArmCables[i].yaw = twist;
             this.rightArmCables[i].roll = (float)Math.cos(ageInTicks * 0.15F + offset + 1.0F) * 0.2F;
-            this.rightArmCables[i].pitch = torsoRotation; // Apply torso rotation
+            this.rightArmCables[i].pitch = 0.0F;
         }
         
         // Animate arm cables - chaotic wrapping motion
@@ -304,27 +324,27 @@ public class BacteriaModel<T extends BacteriaEntity> extends SinglePartEntityMod
         for (int i = 0; i < this.leftLegCables.length; i++) {
             float offset = i * 0.7F;
             float twist = (float)Math.sin(ageInTicks * 0.18F + offset) * 0.35F;
-            this.leftLegCables[i].yaw += twist;
+            this.leftLegCables[i].yaw = twist;
         }
         
         for (int i = 0; i < this.rightLegCables.length; i++) {
             float offset = i * 0.7F;
             float twist = (float)Math.sin(ageInTicks * 0.18F + offset + 0.5F) * 0.35F;
-            this.rightLegCables[i].yaw += twist;
+            this.rightLegCables[i].yaw = twist;
         }
         
-        // Animate fingers - slight curl and uncurl + torso rotation
+        // Animate fingers - slight curl and uncurl (relative to body)
         for (int i = 0; i < this.leftFingers.length; i++) {
             float offset = i * 0.3F;
             float curl = (float)Math.sin(ageInTicks * 0.08F + offset) * 0.4F;
-            this.leftFingers[i].pitch = 0.3F + curl + torsoRotation; // Add torso rotation
+            this.leftFingers[i].pitch = 0.3F + curl;
             this.leftFingers[i].yaw = -0.1F + (i - 2) * 0.05F; // Spread fingers
         }
         
         for (int i = 0; i < this.rightFingers.length; i++) {
             float offset = i * 0.3F;
             float curl = (float)Math.sin(ageInTicks * 0.08F + offset + 1.0F) * 0.4F;
-            this.rightFingers[i].pitch = 0.3F + curl + torsoRotation; // Add torso rotation
+            this.rightFingers[i].pitch = 0.3F + curl;
             this.rightFingers[i].yaw = 0.1F - (i - 2) * 0.05F; // Spread fingers
         }
     }

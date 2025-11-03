@@ -7,6 +7,7 @@ import com.sp.command.GimmeMyInventoryBack;
 import com.sp.command.LevelCommand;
 import com.sp.command.SkinwalkerCommand;
 import com.sp.compat.modmenu.ConfigStuff;
+import com.sp.entity.custom.BacteriaEntity;
 import com.sp.entity.custom.SkinWalkerEntity;
 import com.sp.entity.custom.SmilerEntity;
 import com.sp.entity.ik.model.GeckoLib.MowzieModelFactory;
@@ -23,7 +24,9 @@ import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricDefaultAttributeRegistry;
 import net.fabricmc.loader.api.FabricLoader;
+import net.minecraft.entity.SpawnRestriction;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
+import net.minecraft.entity.mob.HostileEntity;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.packet.s2c.play.PlaySoundS2CPacket;
 import net.minecraft.registry.Registries;
@@ -31,6 +34,7 @@ import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
+import net.minecraft.world.Heightmap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import software.bernie.geckolib.GeckoLib;
@@ -83,6 +87,9 @@ public class SPBRevamped implements ModInitializer {
 		FabricDefaultAttributeRegistry.register(ModEntities.SMILER_ENTITY, SmilerEntity.createSmilerAttributes());
 		FabricDefaultAttributeRegistry.register(ModEntities.WALKER_ENTITY, com.sp.entity.custom.WalkerEntity.createWalkerAttributes());
 		FabricDefaultAttributeRegistry.register(ModEntities.BACTERIA_ENTITY, com.sp.entity.custom.BacteriaEntity.createBacteriaAttributes());
+
+		// Register bacteria spawn restrictions (only spawn below y=25)
+		SpawnRestriction.register(ModEntities.BACTERIA_ENTITY, SpawnRestriction.Location.ON_GROUND, Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, BacteriaEntity::canSpawn);
 
 		LOGGER.info("\"WOOOOOOOOOOOOOOOOOOOOOOOooooooooooooooooooooooooo..........\" -He said as he fell into the backrooms, never to be seen again.");
 

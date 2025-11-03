@@ -88,6 +88,7 @@ public class ModSounds {
     public static final SoundEvent SMILER_AMBIENCE = registerSoundEvent("smiler_laugh");
     public static final SoundEvent SMILER_GLITCH = registerSoundEvent("smiler_glitch");
 
+    public static final SoundEvent BACTERIA_CHASE = registerSoundEvent("bacteria_chase");
 
     public static final SoundEvent CARPET_WALK = registerSoundEvent("carpet_walk");
     public static final SoundEvent CARPET_RUN = registerSoundEvent("carpet_run");

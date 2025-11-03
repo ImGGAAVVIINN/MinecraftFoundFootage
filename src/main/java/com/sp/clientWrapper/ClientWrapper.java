@@ -12,6 +12,7 @@ import com.sp.block.entity.TinyFluorescentLightBlockEntity;
 import com.sp.cca_stuff.PlayerComponent;
 import com.sp.compat.modmenu.ConfigStuff;
 import com.sp.entity.client.SkinWalkerCapturedFlavorText;
+import com.sp.entity.custom.BacteriaEntity;
 import com.sp.entity.custom.SkinWalkerEntity;
 import com.sp.entity.custom.SmilerEntity;
 import com.sp.entity.ik.parts.sever_limbs.ServerLimb;
@@ -20,6 +21,7 @@ import com.sp.init.HelpfulHintManager;
 import com.sp.init.ModSounds;
 import com.sp.networking.InitializePackets;
 import com.sp.sounds.*;
+import com.sp.sounds.entity.BacteriaChaseSoundInstance;
 import com.sp.sounds.entity.SkinWalkerChaseSoundInstance;
 import com.sp.sounds.entity.SmilerAmbienceSoundInstance;
 import com.sp.sounds.entity.SmilerGlitchSoundInstance;
@@ -358,6 +360,23 @@ public class ClientWrapper {
             entity.chaseSoundInstance = new SkinWalkerChaseSoundInstance(entity);
             client.getSoundManager().play(entity.chaseSoundInstance);
         }
+    }
+
+    public static void onRemoveBacteriaClientSide(BacteriaEntity entity) {
+        if (entity.chaseSoundInstance != null && entity.getWorld().isClient) {
+            MinecraftClient.getInstance().getSoundManager().stop(entity.chaseSoundInstance);
+        }
+    }
+
+    public static void handleBacteriaEntityClientSide(BacteriaEntity entity) {
+        MinecraftClient client = MinecraftClient.getInstance();
+        // Stop previous sound if it exists
+        if (entity.chaseSoundInstance != null && client.getSoundManager().isPlaying(entity.chaseSoundInstance)) {
+            client.getSoundManager().stop(entity.chaseSoundInstance);
+        }
+        // Play new random sound
+        entity.chaseSoundInstance = new BacteriaChaseSoundInstance(entity);
+        client.getSoundManager().play(entity.chaseSoundInstance);
     }
 
     public static void tickEmergencyLight(World world, BlockPos pos, BlockState state, EmergencyLightBlockEntity block) {

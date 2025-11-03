@@ -294,6 +294,17 @@
       "spb-revamped:smiler/smiler_glitch"
     ]
   },
+  "bacteria_chase": {
+    "sounds": [
+      "spb-revamped:bacteria/1",
+      "spb-revamped:bacteria/2",
+      "spb-revamped:bacteria/3",
+      "spb-revamped:bacteria/4",
+      "spb-revamped:bacteria/5",
+      "spb-revamped:bacteria/6",
+      "spb-revamped:bacteria/7"
+    ]
+  },
   "carpet_run": {
     "sounds": [
       "spb-revamped:carpet/running/carpet_run_1",
