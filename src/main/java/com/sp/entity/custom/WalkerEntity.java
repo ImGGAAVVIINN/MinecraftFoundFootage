@@ -12,6 +12,10 @@ import com.sp.init.ModEntities;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.mob.MobEntity;
+import net.minecraft.entity.attribute.DefaultAttributeContainer;
+import net.minecraft.entity.attribute.EntityAttributes;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.hit.HitResult;
@@ -32,10 +36,10 @@ import software.bernie.geckolib.util.GeckoLibUtil;
 import java.util.ArrayList;
 import java.util.List;
 
-public class WalkerEntity extends Entity implements GeoEntity, GeoAnimatable, IKAnimatable<WalkerEntity> {
+public class WalkerEntity extends MobEntity implements GeoEntity, IKAnimatable<WalkerEntity> {
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
     @Nullable
-    private Entity target = null;
+    private Entity walkerTarget = null;
 
     private final Quaterniond rotation = new Quaterniond(0,0,0,1); // Default rotation facing down the Z-axis
     private final List<IKModelComponent<WalkerEntity>> components = new ArrayList<>();
@@ -73,7 +77,14 @@ public class WalkerEntity extends Entity implements GeoEntity, GeoAnimatable, IK
         ));
     }
 
-    public double getRoll() {
+    public static DefaultAttributeContainer.Builder createWalkerAttributes(){
+        return MobEntity.createMobAttributes()
+                .add(net.minecraft.entity.attribute.EntityAttributes.GENERIC_MAX_HEALTH, 400F)
+                .add(net.minecraft.entity.attribute.EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.2D)
+                .add(net.minecraft.entity.attribute.EntityAttributes.GENERIC_KNOCKBACK_RESISTANCE, 0.0D);
+    }
+
+    public double getRollDouble() {
         return roll;
     }
 
@@ -94,29 +105,29 @@ public class WalkerEntity extends Entity implements GeoEntity, GeoAnimatable, IK
 
     }
 
-    public @Nullable Entity getTarget() {
-        return target;
+    public @Nullable Entity getWalkerTarget() {
+        return walkerTarget;
     }
 
-    public void setTarget(@Nullable Entity target) {
-        this.target = target;
+    public void setWalkerTarget(@Nullable Entity target) {
+        this.walkerTarget = target;
     }
 
     @Override
     public void tick() {
-        ((Entity) this).baseTick(); // Leave this as is. Trust me.
+        super.baseTick(); // Leave this as is. Trust me.
         this.tickComponentsServer(this);
 
         PlayerEntity nearestPlayer = this.getWorld().getClosestPlayer(this, 100);
         if (nearestPlayer != null && nearestPlayer.getMainHandStack().isOf(Items.BONE)) {
-            this.setTarget(nearestPlayer);
+            this.setWalkerTarget(nearestPlayer);
         } else {
-            this.setTarget(null);
+            this.setWalkerTarget(null);
         }
 
         this.isWalking = false;
 
-        if (this.getTarget() != null) {
+        if (this.getWalkerTarget() != null) {
             this.isWalking = true;
 
             Vec3d direction = this.getFacingTarget();
@@ -136,7 +147,7 @@ public class WalkerEntity extends Entity implements GeoEntity, GeoAnimatable, IK
 
             rotation.nlerp(newRotation, 0.6);
 
-            Vec3d newVelocity = this.getRotationVector().multiply(this.getTarget().distanceTo(this) * SPEED_MULTIPLIER);
+            Vec3d newVelocity = this.getRotationVector().multiply(this.getWalkerTarget().distanceTo(this) * SPEED_MULTIPLIER);
 
             if (Math.min(SQUARED_MAX_VELOCITY, newVelocity.lengthSquared()) != SQUARED_MAX_VELOCITY) {
                 this.setVelocity(newVelocity);
@@ -156,7 +167,7 @@ public class WalkerEntity extends Entity implements GeoEntity, GeoAnimatable, IK
     }
 
     private Vec3d getFacingTarget() {
-        Vec3d averageDirection = this.getTarget().getPos().subtract(this.getPos()).normalize();
+    Vec3d averageDirection = this.getWalkerTarget().getPos().subtract(this.getPos()).normalize();
         int directionsApplied = 1;
 
         List<Vec3d> testPositions = new ArrayList<>();
@@ -287,12 +298,12 @@ public class WalkerEntity extends Entity implements GeoEntity, GeoAnimatable, IK
     }
 
     @Override
-    protected void readCustomDataFromNbt(NbtCompound nbt) {
+    public void readCustomDataFromNbt(NbtCompound nbt) {
 
     }
 
     @Override
-    protected void writeCustomDataToNbt(NbtCompound nbt) {
+    public void writeCustomDataToNbt(NbtCompound nbt) {
 
     }
 

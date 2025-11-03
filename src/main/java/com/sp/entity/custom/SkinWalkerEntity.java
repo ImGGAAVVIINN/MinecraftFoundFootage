@@ -102,7 +102,7 @@ public class SkinWalkerEntity extends HostileEntity implements GeoEntity, GeoAni
 
     public static DefaultAttributeContainer.Builder createSkinWalkerAttributes() {
         return HostileEntity.createHostileAttributes()
-                .add(EntityAttributes.GENERIC_MAX_HEALTH, 10000F)
+                .add(EntityAttributes.GENERIC_MAX_HEALTH, 400F)
                 .add(EntityAttributes.GENERIC_FOLLOW_RANGE, 1000.0F)
                 .add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.32f)
                 .add(EntityAttributes.GENERIC_ATTACK_DAMAGE, 12.0f);
@@ -137,7 +137,8 @@ public class SkinWalkerEntity extends HostileEntity implements GeoEntity, GeoAni
             this.component.setTargetPlayerUUID(this.getTargetPlayer(this.getWorld()));
         }
 
-        this.setInvulnerable(this.component.isInTrueForm());
+    // Always allow the skinwalker to take damage (previously invulnerable in true form)
+    this.setInvulnerable(false);
 
         if (this.getWorld().isClient && this.component.isInTrueForm()) {
             this.tickComponentsServer(this);

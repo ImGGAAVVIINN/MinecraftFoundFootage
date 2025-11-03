@@ -107,9 +107,9 @@ public class SmilerEntity extends MobEntity {
 
     public static DefaultAttributeContainer.Builder createSmilerAttributes(){
         return MobEntity.createMobAttributes()
-                .add(EntityAttributes.GENERIC_MAX_HEALTH, 1000)
+                .add(EntityAttributes.GENERIC_MAX_HEALTH, 16)
                 .add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0)
-                .add(EntityAttributes.GENERIC_KNOCKBACK_RESISTANCE, 1000);
+                .add(EntityAttributes.GENERIC_KNOCKBACK_RESISTANCE, 10.0);
     }
 
 

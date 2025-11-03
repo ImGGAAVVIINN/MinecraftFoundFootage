@@ -70,7 +70,7 @@ public class IKWalkerComponent<C extends IKChain, E extends IKAnimatable<E>> ext
                     xformOverride.rotateYXZ((float) -Math.toRadians(entity.getYaw()), (float) -Math.toRadians(entity.getPitch() + 90), 0);
 
 
-                    xformOverride.rotateZ((float) -Math.toRadians(entity.getRoll()));
+                    xformOverride.rotateZ((float) -Math.toRadians(entity.getRollDouble()));
 
                     mowzieGeoBone.setWorldSpaceMatrix(xformOverride);
                 }
